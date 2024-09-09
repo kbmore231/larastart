@@ -1,0 +1,3495 @@
+1 Introduction
+Prerequisite:
+PHP
+MySQL
+
+Laravel is a free, open-source and one of the more popular php web frameworks based on MVC architectural pattern.
+Developed by 	Taylor Otwell in June 2011.
+Used for Web apps and create APIs
+
+Core php
+$con = mysqli_connect('localhost', 'root', '', 'crud');
+$sql = "SELECT * FROM student JOIN student_class WHERE student.sclass = student_class.cid";
+$result = mysqli_query($con, $sql) or die('Query unsuccessful');
+if(mysqli_num_rows($result)) {
+    while ($row = mysqli_fetch_assoc($result)) {
+    //code
+
+
+
+
+Benefits of MVC
+Organized code
+Independent block
+Reduces the complexity of web applications
+Easy to maintain
+Easy to modify
+Code reusability
+Improved collaboration
+Platform independence
+
+Popular MVC Frameworks
+PHP MVC Framework
+Other Programming MVC Framework
+Laravel
+Django & Flask (Python)
+Symfony
+Ruby on Rails (Ruby)
+CodeIgniter
+Express.js (JavaScript/Node.js)
+Yii
+ASP.NET MVC (ASP.net core)
+CakePHP
+
+
+Zend Framework
+
+
+
+
+
+
+Benefits of Laravel Framework
+Open source 
+Elegant syntax
+MVC architecture
+Database migration and ORM
+Robust routing system
+Command-line Interface(Composer)
+Powerful template engine (Blade Template)
+Authentication and authorization
+Testing and debugging Security (XSS, CSRF, SQL injection)
+Scalability and performance(Redis and Memcached)
+Robust ecosystem and community
+
+What we will learn in this Laravel Series
+Artisan CLI 
+Migration
+Routing
+Middleware
+Views
+Form Validation
+Template
+Authentication
+Controllers
+Handling File Upload
+Model
+APIs Validation
+Database
+Project
+Eloquent ORM
+News Blog Project
+
+2 Install Xampp & Composer
+Laravel Installation Process(v10.0)
+Xampp(PHP 8.1 & MySQL)
+Composer
+Laravel
+VS Code Editor
+
+What is a composer?
+A dependency manager for PHP
+Install Package with Single Command
+Can Update version package, framework etc.
+Composer can be used with any PHP framework.
+
+Xampp: download and install
+
+
+After Xampp installation, we are required to run xampp and manually start Apache & MySQL from Xampp-control
+Composer: Download & install, During installation, clicked on “developer mode” checkbox
+
+General: We can install php different versions in different drives too(C, D, E)
+General: cmd> echo $PATH%
+3 Installing 
+
+He had installed xampp in C drive and installed Laravel in D drive
+Install Laravel
+Install VSCode
+
+VS Code Extensions
+PHP Intellisense (Damjan Cvetko)
+PHP Namespace Resolver (Mehedi Hassan)
+Laravel Extra Intellisense (amir)
+Laravel-blade(Christian Howe)
+Laravel Blade Snippets (Winnie Lin): Highlight directives or syntaxes of blade files(we’ll need to add setting too)
+Laravel goto view (codingyu): View file jump: Ctrl + Click  
+Laravel Goto (adrian): used to jump to file by hovering to class name, eg. classname in route file.
+MySQL(Weijan Chen): MySQL interface in VSCode. We need to link the database(the left sidebar will have the database logo), Tables will be opened in vscode itself. We can run SQL commands here too. 
+4 Folder & File Structure
+Laravel Folder & File Structure
+Folder
+Purpose
+Model Folder
+Database / SQL Queries Handling Files
+Controller Folder
+Business Logics Files
+View Folder
+HTML Files
+Routing Folder 
+URL Defining Files
+Assets Folder(Public Folder)
+Images / Fonts / Music / Videos Files / CSS / JavaScript Files
+
+5 Routing Basics
+Laravel Route
+Route —> URL   (Webpage URL / APIs URL)
+
+Pure PHP
+http://localhost/about.php
+http://localhost/pages/about.php
+
+
+
+vscode : 
+terminal shortcut: Ctrl + Shift + `
+Go to file: Ctrl + P
+View file jump: Ctrl + Click  //”Laravel goto view” plugin
+127.0.0.1:8000 = localhost:8000
+Cmd: php artisan route:cache  //Trigger this command, once we done our work and ready to push/publish, this will cache urls 
+Cmd: php artisan route:clear  //Clear route cache
+Cmd: php artisan route:list –except-vendor  //List only our routes. Not laravel/vender created
+Cmd: php artisan route:list –path=post     //list specific word related routes
+6 Routing Parameters & Constraints
+Laravel Route Parameters
+http://localhost/post/10
+http://localhost/post/yahoobaba
+http://localhost/post/news10
+http://localhost/post/@news10
+
+Route.php
+Route::get(‘/post/{id}’, function (string $id) {
+ Return ‘User ’.$id;
+});
+
+Laravel Route Constraints
+http://localhost/post/10		whereNumber(‘id’)
+http://localhost/post/yahoobaba	whereAlpha(‘name’)
+http://localhost/post/news10		whereAlphaNumeric(‘name’)
+http://localhost/post/song 		whereIn(‘category’, [‘movie’, ‘song’]) 	
+http://localhost/post/@10 		where(‘id’, ‘[@0-9]+’)   //Regular expression
+
+Route::get('/post/{id?}/comment/{commentId?}', function(string $id = null, $comment = null){
+    if($id) {
+        return "<h1>Post Id: ".$id."</h1><h2>Comment: ".$comment."</h2>";
+    } else {
+        return "<h1>No Id found</h1>";
+    }
+})->where('id', '[0-9]+')->whereAlpha('commentId');
+
+Response will be “404 Page not found” if Route constraint fails
+7 Named Route & Routes Group
+Named Routes benefits
+If url change, our script still be running
+If our url is lengthy, it can become simpler and more readable
+
+
+
+web.php
+Route::prefix('page')->group(function() {
+    Route::get('about', function() {
+        return "<h1>About Page</h1>";
+    });
+    Route::get('gallery', function() {
+        return "<h1>Gallery Page</h1>";
+    });
+    Route::get('post/firstpost', function() {
+        return "<h1>First post</h1>";
+    });
+});
+Route::fallback(function(){
+    return "<h1>Page Not Found</h1>";
+});
+
+fallback() : Page not found
+Named route, redirection, Route group, Page not found
+8 Blade Template - I 
+Core PHP
+Blade syntax
+<?php echo “Hello”; ?>
+{{ ‘Hello’’ }} 
+Prevents cross-site scripting attack
+<?php echo $name; ?>
+{{ $name }}
+<?php echo “<h1>Hello</h1>”; ?>
+{!! “<h1>Hello</h1>” !!}
+<?php
+
+?>
+@php
+
+@endphp
+<?php
+  //comment
+?>
+{{-- Comment  –}}
+Control Structure
+<?php
+   if(condition){
+      //Statements
+   }elseif(condition){
+      //Statements
+   }else{
+      //Statements
+   }
+@if(condition)
+   //Statements
+@elseif(condition)
+   //Statements
+@else
+   //Statements
+@endif
+<?php
+   switch($i){
+      case 1:
+         First case…
+         break;
+      case 2:
+         Second case…
+         break;
+      case 3:
+         Third case…
+         break;
+   }
+?>
+   @switch($i)
+      @case(1)
+         First case…
+         @break;
+      @case(2)
+         Second case…
+         @break;
+      @default
+         Default case…
+   @endswitch
+<?php
+   if(isset($records)){
+      //Statement
+   }
+?>
+@isset($records)
+   //$record is defined and is not null…
+@endisset
+<?php
+   if(empty($records)){
+      //Statements
+   }
+?>
+@empty($records)
+   //$records is empty
+@endempty
+Blade Loop Statement
+@for($i = 0; $i < 10; $i++)
+   The current value is {{ $i }}
+@endfor
+
+@foreach($users as $user)
+   <p>This is user {{ $user }}</p>
+@endforeach 
+
+@while(condition)
+ <p>Loop statement</p>
+@endwhile
+@forelse($users as $user)
+ <li>{{ $user->name }}</lil>
+@empty
+   <p>No uses</p>
+@endforelse
+
+@continue
+
+@break
+
+
+
+
+
+
+
+{{ 5+2 }}
+{{ "Hello World" }}
+{{ "<h1>Hello World</h1>" }}
+{!! "<h1>Hello World</h1>" !!}
+{{-- Comment statement --}}
+
+
+@php
+    $names = ['Khushal', 'Ajay', 'Ketan'];
+    $user = 'kbmore';
+@endphp
+
+
+<ul>
+    @foreach ($names as $n)
+        @if($loop->even)
+            <li style="color:red">{{ $n }}</li>
+        @elseif($loop->odd)
+            <li style="color:green">{{ $n }}</li>
+        @endif
+    @endforeach
+</ul>
+
+
+@{{ $user }}
+@@if()
+O/P
+
+@{{ $user }}  //it’ll echo as it is ie. {{ $user }}.  Same for other directives too(eg. @if, @for, and so on).
+9 Blade Template - II Including Subviews
+Reusable Templates
+Blade Template Main Directives
+@include
+@section
+@extends
+@yield
+
+Include files
+Include
+includeIf
+includeWhen
+includeUnless(executes if condition is false)
+includeFirst
+10 Blade Template - III Template Inheritance
+@yield(‘title’, ‘Default Title’);   //If we forget to pass title variable, default title will be used
+@hasSection..else…@endif  //this checks if section exists as well as no empty section
+<article>
+    @hasSection('content')
+        @yield('content')
+    @else
+        <h2>No Content Found.</h2>
+    @endif
+</article>
+
+If we have same section with same name, the first will be picked(eg. About page)
+@extends('layouts.masterlayout')
+
+
+@section('content')
+    <h2>About Page</h2>
+    <p>Lorem ipsum</p>
+@endsection
+
+
+@section('content')
+    <h2>Another Page</h2>
+    <p>Lorem ipsum</p>
+@endsection
+
+Append code
+  
+
+
+Paths:
+1 Relative path won’t start with http or domain & it’ll directly check resource in public folder
+<link rel="stylesheet" href="css/style.css">
+
+2 Absolute path will start form http, domain(complete path)
+<link rel="stylesheet" href="{{ asset('css/style.css') }}">
+11 Blade Template - IV JS in Blade
+1 Use @json directive in javascript to access php variable/array, it’ll convert array/object into json. 
+2 New trick is use {{ Js::from($fruits) }}
+
+Javascript in blade, this can be used to push CSS or other script to blade(master layout)
+The push&stack can be done with section&yield. But main difference is that in section&yield case, if we have multiple section with same name, it renders only 1st component. But in push&stack case we can have multiple block with same name
+
+
+@prepend: define area(eg style), the content will be prepended to defined area
+
+Verbatim directive: It skips execution from Laravel. So other script can execute, eg. vue js, JavaScript
+
+layout.blade
+<html>
+    <head>
+        <title>@yield('title', 'Default Title')</title>
+        <link rel="stylesheet" href="{{asset('css/app.css')}}">
+        @stack('style')
+    </head>
+    <body>
+        <div class="container">
+            <div class="navbar">
+                <ul>
+                    <li href="home">Home</li>
+                    <li href="contact">Contact</li>
+                    <li href="aout">About</li>
+                </ul>
+            </div>
+            @yield('content')
+        </div>
+        @stack('script')
+    </body>
+</html>
+
+welcome.blade.php
+@extends('test.layout')
+
+
+@section('title', 'Welcome')
+
+
+@section('content')
+    <h1>Welcome Page</h1>
+    <div id="app">
+        @verbatim
+        {{ message }}
+        @endverbatim
+    </div>
+    @php
+        $user = "Khushal More";
+        $fruits = ["Apple", "Orange", "Banana", "Grapes"];
+    @endphp
+@endsection
+
+
+@push('style')
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" >
+    <style>
+        ul{color:blue}
+    </style>
+@endpush
+
+
+@prepend('style')
+    <style>
+        body{background-color: gray}
+    </style>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+@endprepend
+
+
+@push('script')
+<script>
+    const { createApp } = Vue
+
+
+    createApp({
+    data() {
+        return {
+            message: 'Hello Vue!'
+        }
+    }
+    }).mount('#app')
+</script>
+<script>
+    var user = @json($user);
+    console.log('user:', user);
+    var fruits = {{ Js::from($fruits) }}
+    console.log('fruits:', fruits);
+    console.log('fruits forEach loop:');
+    fruits.forEach(function(fruit){
+        console.log(fruit);
+    })
+</script>
+@endpush
+O/P
+
+12 Pass Data Route to View
+
+web.php
+$name = 'Yahoo Baba';
+
+
+//Trick 1
+return view('users', [  
+    'user' => $name,
+    'city' => 'Delhi'
+]);
+
+
+//Trick 2
+return view('users')
+    ->with('user', $name)
+    ->with('city', 'Delhi');
+
+
+//Trick 3
+return view('users')->withUser($name)->withCity('Delhi');
+
+$names = [
+    1 => ['name' => 'Amitabh', 'phone' => '9879596548'],
+    2 => ['name' => 'Salman', 'phone' => '6589789815'],
+    3 => ['name' => 'Sunny', 'phone' => '9689547898']
+];
+
+
+return view('users', [
+    'user' => $names,
+    'city' => 'Delhi'
+]);
+
+users.blade.php
+@foreach($users as $id => $u)
+    <h3>{{ $id }}  {{ $u['name'] }} | {{ $u['phone'] }} </h3> | 
+    <a href="{{ route('view.user', $id) }}">Show</a>
+@endforeach
+
+abort_if()
+Route::get('user/{id}', function($id) {
+    $users = getUsers();
+    abort_if(!isset($users[$id]), 404);
+    $user = $users[$id];
+    return view('user', ['id' => $user]);
+});
+13 Controller
+
+
+
+PageController.php
+class PageController extends Controller {
+    public function showHome() {
+        return view('welcome');
+    }
+
+
+    public function showUser(string $id) {
+        return view('user', compact('id'));
+    }
+}
+
+web.php
+Route::get('/', [PageController::class, 'showHome'])->name('home');
+Route::get('/user/{id}', [PageController::class, 'showUser'])->name('users');
+
+Controller group: 
+Route::controller(PageController::class)->group(function() {
+    Route::get('/', 'showHome')->name('home');
+    Route::get('/user/{id}', 'showUser')->name('users');
+});
+
+Single action controller: dedicated to perform only single function. It has __invoke() method, whenever we call this controller, the __invoke() function gets called. We can define other methods here too & call as usual through route
+
+
+14 Database Migration
+
+
+
+Php artisan make:migration create_users_table
+Php artisan migrate
+Php artisan migrate:rollback  // params: –step=3,  –batch=3
+Php artisan migrate:status  //migrated with batch & non migrated(pending)
+Php artisan migrate:reset   //remove all the migrations, except laravel default table(migrations)
+Php artisan migrate:refresh  //rollback all the migrations, then migrate. Useful for testing
+Php artisan migrate:fresh   //drop all the tables, then migrate
+Php artisan make:model Task -m   //create model with migration 
+On production site, we may not be able to migrate, use –force tag
+
+$ php artisan migrate –force
+
+
+
+
+
+public function up(): void
+{
+    Schema::create('students', function (Blueprint $table) {
+        $table->id();
+        $table->string('name', 30);
+        $table->string('email');
+        $table->float('percentage', 3, 2);
+    });
+}
+
+
+
+15 Migration Modifiers & Constraints
+Laravel: Migration - 1
+How to Create Migrations
+How to Create Database’s Tables
+How to Define Table’s Column Data Types
+How to Rollback and Reset Migration
+
+
+
+
+
+
+
+
+public function up(): void
+{
+    Schema::create('students', function (Blueprint $table) {
+        $table->integer('student_id');
+        $table->string('name', 30);
+        $table->string('email')->unique()->nullable();
+        $table->float('percentage', 3, 2)->comment('Student Percentage');
+        $table->primary('student_id');
+        $table->string('city')->default('No City');
+        $table->integer('age')->unsigned();
+    });
+}
+16 Migration Primary & Foreign key
+Laravel: Migration - 1 & 2
+How to Create Migration File
+How to Create Database’s Tables
+How to Modify Tables
+How to add Constraints & Modifiers on Tables
+How to Rollback and Reset Migration
+
+Primary key must be int or bigInt means Numeric value
+
+
+
+
+Tips of Foreign key constraint:
+-If we have a successful relationship of foreign key, then hover on foreign key/column value in foreign/child table. It’ll show parent table’s value
+-As libraries table is linked with student id 1 & 3. If we change/delete the id of these in the students table, it won’t allow it, because we have used foreign key constraints. 
+-We can change/delete id 2 to 22 or 4. It’ll allow, because it’s not linked to any child record
+-onUpdate(‘restrict’): Default, If parent record is linked with child, It won’t allow to update parent
+-onDelete(‘restrict’): Default, If parent record is linked with child, It won’t allow to delete parent
+-onUpdate(‘cascade’): update referenced column value, if parent column value changes
+-onDelete(‘cascade’): Delete referenced column/s whole row, if parent column’s row is deleted.
+-onDelete(‘set null’): Set null value to referenced column, if parent’s column’s row deleted
+-We cannot directly delete foreign column, first we’ll have to remove foreign constraint, then delete column
+
+
+
+Foreign Key with Cascade & Restrict
+cascadeOnUpdate();
+cascadeOnDelete();
+restrictOnUpdate();
+restrictOnDelete();
+nullOnDelete();
+
+
+
+
+
+17 Seeders
+Seeding: Initial data like cities/states 
+
+
+$ php artisan migrate:fresh –seed
+
+Extension: MySQL: Weijan Chen: We need to link the database(left sidebar will have database logo), Tables will be opened in vscode itself. We can run SQL commands here too. 
+
+MySQL (Weijan Chen) plugin for MySQL
+
+
+Run specific seeder
+public function run(): void {
+    $this->call([
+        StudentSeeder::class,
+        UserSeeder::class
+    ]);
+}
+
+$ php artisan db:seed –class=UserSeeder
+
+If we have data in bulk, we’ll store data in json file, and use in seeder
+
+
+
+-fakerphp/php package is installed in laravel by default. We don’t need to include/import externally to use in Seeder class
+-Generally we don't use fake data in seeders. Fakers can be useful to test data in bulk
+public function run(): void
+{
+    Student::create([
+        'name' => fake()->name(),
+        'email' => fake()->unique()->email(),
+    ]);
+}
+
+
+
+18 Model Factory
+
+$ php artisan make:factory StudentFactory
+
+
+
+$ php artisan db:seed
+
+Multiple table factory at once
+namespace Database\Seeders;
+use App\Models\User;
+use Illuminate\Database\Seeder;
+class DatabaseSeeder extends Seeder {
+    public function run(): void {
+        Student::factory()->count(5)->create();
+        User::factory()->count(5)->create();
+    }
+
+We can omit count() method
+public function run(): void {
+    Student::factory(5)->create();
+}
+
+
+php artisan make:factory CountryFactory –model=CountrList
+->It’ll consider CountrList Model for CountryFactory, It won’t going to create CountrList model
+->If we don’t use –model attribute, according to factory name(CountryFactory), The model(Country) will be considered in CountryFactory	
+19 Query Builder
+
+
+
+
+Chrome “json viewer” extension
+Where methods:
+    ->where('name', 'like', 's%')
+
+
+    ->where([
+        ['city', '=', 'goa'],
+        ['age', '>', 20]
+    ])
+
+
+    ->where('city', '=', 'mumbai')
+    ->orWhere('age', '<', 18)
+
+
+    ->whereBetween('age', [18, 20])
+
+
+    ->whereIn('city', ['delhi', 'goa'])
+
+
+    ->whereDate('created_at', '2023-06-27')
+
+
+    ->whereMonth('created_at', '6')
+
+
+    ->whereDay('created_at', '27')
+
+
+    ->whereYear('created_at', '2023')
+
+
+    ->whereTime('created_at', '08:01:32')
+
+->orderBy('age', 'desc')
+
+Count, max, min, avg, sum
+$count = DB::table('users')->count();    
+$max = DB::table('users')->max('age');
+20 Query Builder - Insert Update Delete 
+
+insert() returns true on success and false of error/fail. We can add multiple records at same time
+If we migrate data and if the migration file has no timestamps() function for (created_at/updated_at). Use following statement in respective model
+public $timestamps = false;
+
+upSert(), insertOrIgnore(), insertGetId(), updateOrInsert(), increment(), decrement(), incrementEach()
+
+insertGetId():returns inserted id. It  works, only if there is auto_increment column
+upSert(COULUMN_VALUE, UNIQUE_COLUMN/s): email is a unique constraint, we passed email in the 2nd param, so if email already exists, it’ll update with passed data. If doesn’t exists, it’ll add
+
+upSert() accept 2 params, 3rd is optional
+upSert(COULUMN_VALUE, UNIQUE_COLUMN/s, ONLY_UPDATE_COLUMN/s):
+$user = DB::table('users')
+        ->upsert(
+            [
+                'name' => 'Ravi Kumar',
+                'email' => 'abc@gmail.com',
+                'age' => 18,
+                'city' => 'Delhi'
+            ],
+            ['email'],
+            ['city']
+        );
+
+updateOrInsert: 1st param will check condition,2nd will contain data. If the condition matches, the 2nd param will be updated. If condition fails, then condition&data both will be inserted into the data
+$user = DB::table('users')
+        ->updateOrInsert(
+            [
+                'name' => 'Ravi Kumar',
+                'email' => 'abc@gmail.com'
+            ],
+            [ 'age' => 18],
+            ['city']
+        );
+    }
+
+public function updateUser() {
+    $user = DB::table('users')
+            ->updateOrInsert(
+                [
+                    'name' => 'Ravi Kumar',
+                    'email' => 'abc@gmail.com'
+                ],
+                [ 'age' => 18]
+            );
+        }
+}
+
+increment(): (decrement() is vice versa) works only with integer datatype in database. By default it increments by 1
+$user = DB::table('users')->where('id', 3)->increment('age');
+
+We can increment by desired number. (decrement() is vice versa)
+->increment('age', 5)
+
+Update other columns with increment/decrement
+$user = DB::table('users')->where('id', 3)->decrement('age', 3, ['city' => 'delhi']);
+
+incrementEach(): multiple integer column increment
+->incrementEach([
+        'age' => 2,
+        'votes' => 1
+    ])
+
+delete() method won’t reset id(auto increment). Means if we deleted all 5 records from the database, and inserted a new record. It’ll start with 6
+truncate(): remove all data, resets id(auto increment) column
+$user = DB::table('users')->truncate();
+21 Query Builder with Forms
+
+CSRF: Cross-Site Request Forgeries: Unauthorized person can inject harmful js or script and can send to action path of form. So CSRF field is used
+Laravel saves a unique token for individual users and sends the same token to the user in a form. Whenever a user submits the form, the laravel verifies the same token, if matches, then only allows access. So even if an unauthorized person got our action path, He can’t do harmful things.
+
+public function addUser(Request $request) {
+    $user = DB::table('users')
+            ->insert([
+                'name'  =>  $request->name,
+                'email' =>  $request->email,
+                'age'   =>  $request->age,
+                'city'  =>  $request->city
+            ]);
+
+
+}
+
+
+Route::options() is nothing but it is Route::match() or Route::any()
+
+
+
+22 Query Builder with Pagination
+
+
+-Laravel pagination default limit is 15
+-3rd cursorPaginate() is more suitable to deal with lakhs or crores of data. But it's not popular. It utilizes more server resources. Because it stores cache. It has no number system like paginate(). This 3rd paginate is used to scroll till bottom site concepts like Pinterest. We won’t see page query strings in the url. As well as encoding too.
+-Indexing: In the database that specific column will be cached id(example) wise. So it works faster
+-Pagination has by default Tailwind css & class in laravel
+-If we want to use bootstrap css & class, try following in AppServiceProvider->boot(){  }
+  	  Paginator::useBootstrapFive();   //Shows total records too
+  //  OR
+  Paginator::useBootstrapFour();
+-If we don’t want to define css in AppServiceProvider, try following in view file:
+	{{ $data->links(‘pagination::bootstrap-5’) }}    //bootstrap-5.blade.php or bootstrap-4.blade.php or tailwind.blade.php are the partial view files stored in vendor/…/pagination/.. folder
+
+
+
+Append query string
+$users = DB::table('users')->paginate(5)->appends(['sort'=>'votes', 'test'=>'abc']);
+
+
+
+
+cursorPaginate():
+
+23 Query Builder with Join Tables
+
+
+MySQL Joins
+INNER JOIN 		join()
+LEFT JOIN 		leftJoin()
+RIGHT JOIN		rightJoin()
+CROSS JOIN		crossJoin()
+
+
+
+
+Whichever column we pass in “groupBy”, that also must present in “Select” like “city_name”
+
+
+
+Multiple condition on join, not used much
+
+24 Query Builder : Union() When() Chunk() Method 
+In Union, the column name & data type must be same
+
+
+$lecturers = DB::table('lecturers')->select('name', 'email');
+$students = DB::table('students')->union($lecturers)->select('name', 'email')->get();
+
+Union with join: here students, lecturers & cities are 3 different tables. We’ll have to use individual joins for individual queries.
+$lecturers = DB::table('lecturers')
+                ->select('name', 'email', 'city_name')
+                ->join('cities', 'lecturers.city', '=', 'cities.id')
+                ->where('city_name', '=', 'delhi');
+               
+$students = DB::table('students')
+                ->union($lecturers)
+                ->select('name', 'email', 'city_name')
+                ->join('cities', 'students.city', '=', 'cities.id')
+                ->where('city_name', '=', 'delhi')
+                ->get();
+
+toSql(): returns the sql command triggered in backend
+$lecturers = DB::table('lecturers')
+                ->select('name', 'email', 'city_name')
+                ->join('cities', 'lecturers.city', '=', 'cities.id');
+
+
+$students = DB::table('students')
+                ->union($lecturers)
+                ->select('name', 'email', 'city_name')
+                ->join('cities', 'students.city', '=', 'cities.id')
+                ->toSql();
+               
+return $students;
+
+
+When
+
+
+When: if-else
+
+
+Chunk is used when we are dealing with thousands or lakhs of data to update. If we don’t use the chunk method, then the server will occupy lots of memory.
+
+
+chunkById will return data in proper sequence
+
+25 Raw SQL Queries 
+In Raw queries, we don’t need to use quotes(‘) individually. 
+Laravel’s Query Builder, Raw Query and Eloquent each use PDO technique in the background. This is useful to secure from SQL injection
+
+PHP Mysql methods
+Procedural
+Object oriented
+PDO(Question mark(?), Secured)
+
+
+
+
+ 
+
+
+
+Named binding: We can give the name as a parameter to the question mark(?).
+
+
+Insert
+
+
+Update
+
+
+Delete
+
+
+If we don’t want to see what sql is returning, we can use DB::statement
+
+
+DB::unprepared: we don’t use question marks. Direct value. It's unsecure. It's not PDO based, it's object oriented based. Laravel recommends to to not prefer this
+
+
+
+Same for groupByRaw, havingRaw
+
+
+
+
+
+
+
+26 Form Validation
+
+web.php
+
+
+
+
+All validation comes from validation.php file located in vendor/laravel/framework/….
+
+Individual error message
+
+
+To preserve old input values, use value=”{{ old(‘username’) }}” in input
+27 Form Request Validation Tutorial in Hindi / Urdu
+
+
+
+prepareForValidation(). This converts inputted value to our desired format like uppercase, lowercase, slug and so on.
+UserRequest.php
+protected function prepareForValidation(): void {
+    $this->merge([
+        'username' =>  Str::slug($this->username)
+    ]);
+}
+
+
+protected $stopOnFirstFailure = true;
+
+class UserController extends Controller
+{
+    public function addUser(UserRequest $req) {
+        // return $req->all();
+        // return $req->(['userpass', 'usercity']);
+        return $req->except(['userpass', 'usercity']);
+    }
+}
+
+28 Custom Validation Rule Tutorial in Hindi / Urdu
+
+$ php artisan make:rule Uppercase
+
+app/Rules/Uppercase.php
+class Uppercase implements ValidationRule {
+    public function validate(string $attribute, mixed $value, Closure $fail): void {
+        if(strtoupper($value) !== $value) {
+            $fail('The :attribute must be uppercase.');
+        }
+    }
+}
+
+
+class UserController extends Controller {
+    public function addUser(UserRequest $req) {
+        $validate = $req->validate([
+            'username' => [
+                'required',
+                function(string $attribute, mixed $value, Closure $fail){
+                    if(strtoupper($value) !== $value) {
+                        $fail('The :attribute must be uppercase.');
+                    }
+                }
+            ],
+            'useremail' => 'required|email'
+        ]);
+        dd($validate);
+    }
+}
+
+29 Resource controller Tutorial in Hindi / Urdu
+
+
+$ php artisan route:list
+
+
+Resource route has 7 routes by default. If we want only specific routes. We can define it using the following way.
+
+
+$php artisan route:list –name-users
+
+
+Same way we can use except() method to use all of the route except specific
+
+Rename default named route
+
+
+
+In the above example, in the comment controller Store/update method it’ll be confused, which id to consider, user_id or comment_id. So solution is shallow() method
+
+
+30 Eloquent ORM Tutorial in Hindi / Urdu
+
+insert() method isn’t supported in eloquent insertion/storage
+
+UserController.php
+
+
+
+
+Find method return direct object.
+If we want multiple records to be found, we’ll pass an array, It’ll give us an array of objects. We can pass specific columns in array form to be selected
+
+We can use min, max, sum, avg with integer values
+
+
+
+
+New method introduced. Field name camel case
+Column alias
+
+
+toSQL shows a secure query. We can’t even see parameter values
+
+To see parameter values, use toRawSQL()
+
+
+dd() will return query(without params) as well as result separately
+
+
+
+See query with params
+
+
+$user = User::whereCity('Delhi')->first();
+
+Where not
+$where = User::where('age', '<>', 20)->get();
+//OR
+$whereNot = User::whereNot('age', 20)->get();
+
+$between = User::whereBetween('age', [20, 22])->get();
+$notBetween = User::whereNotBetween('age', [20, 22])->get();
+$in = User::whereIn('city', ['Delhi', 'Goa'])->get();
+$notIn = User::whereNotIn('city', ['Delhi', 'Goa'])->get();
+
+In Eloquent Raw method, we are not required to use single quotes separately for fields
+
+
+31 Eloquent ORM Create Data
+
+insert() method doesn’t work with Eloquent. insert() works with query builder/raw query
+In 2nd method(Mass), we can use either $guarded or $fillable
+
+
+
+
+Mass assignment. Set $guarded or $fillable array.
+
+UserController.php->store()
+
+32 Eloquent ORM Update & Delete Data
+
+
+
+Validate & Mass update 
+
+
+Using delete() we can use where clause, but destroy() method only works with id and can accept multiple ids
+
+If we have used the delete() method and deleted all records(suppose last id as 10), next if we insert a new record, it’ll start with 11.
+If we have used truncate() method, It’ll empty the table without condition, next if we insert new record, it’ll start with 1
+
+Or 
+
+
+33 Eloquent Advance Methods with Tinkerwell
+Tinker is CLI and Tinkerwell is GUI. It is a paid service worth 1599 for 2 devices.
+findorfail() : if record not found, It’ll redirect to 404 page
+
+
+
+lazy() works similar to chunk, but by default loads only one record and it doesn’t have a closure function. It is bit slower than chunk()
+cursor() is similar to lazy() but lazy() can work with multiple table, but cursor() works with only one table
+
+
+chunkById() can be useful to update data, same can be achieved by lazyById()
+
+
+34 Eloquent Model Conventions
+Table name: plural: users
+Model: singular: User
+
+ 	
+
+If we don’t have columns created_at & updated_at and if we try to insert new record using eloquent save() method, It’ll throw an error. So use following statement in respective table
+public $timestamps = false;
+
+35 Eloquent One To One Relationships
+students -> contacts
+In this series we used joins to display multiple table fields till now. But in eloquent we use relationships instead of joins.
+
+
+
+withWhereHas() is used to put condition on child record
+
+
+whereHas() will check if child record exists with condition, it’ll return only parent record
+
+
+
+
+
+Inserting record using relationship
+
+36 Eloquent One To Many Relationships
+users -> Posts 
+
+
+In .env file we are required to set SESSION_DRIVER to file from the database in laravel 11. Then only we can work with mysql
+Following commented and non-commented statements will return same result
+
+
+
+
+
+
+
+
+Same result as:
+
+
+
+Following way is much simple
+
+
+
+37 Eloquent Many To Many Relationship
+users -> roles -> user_roles
+
+
+
+
+
+
+
+
+
+
+38 Eloquent Has One Through
+users -> companies -> phone_numbers
+
+
+
+
+
+If we have different column names, We can pass extra 4 parameters
+Phone_number::class -> Intended class
+Company::class -> linking class
+User_id ->current model’s linking in company table
+Company_id ->company’s foreign key in phone_humber table
+Id -> user’s primary key
+Id -> company’s primary key
+
+
+Here, the company method/relation isn’t mandatory. If we want company details, then we can use it.
+
+
+
+39 Eloquent Has One of Many
+customers -> orders
+Has one of many will always return only one record of child table
+
+
+
+
+
+
+
+Single record with latest_order:
+
+
+Get orders with latest order
+
+40 Eloquent Has Many Through
+countries->users->posts 
+
+
+
+
+If we have different column names, We can pass extra 4 parameters
+Post::class -> Intended class
+User::class -> linking class
+country_id ->current model’s(country’s) linking in user’s table
+user_id ->user’s foreign key in posts table
+Id -> country’s primary key
+Id -> user’s primary key
+
+
+
+
+
+
+
+
+
+
+
+41 Eloquent One To One Polymorphic
+Polymorphic table must have 2 keys _id & _type. The prefix must be same as function we define in Polymorphic model eg. imageagle()
+
+
+
+
+
+
+If we have different column names in images table, we can pass params in morphTo() method
+
+
+
+
+imageable_id & imageable_type fields will be automatically be filled
+
+
+
+42 Eloquent One To Many Polymorphic
+
+
+
+
+
+
+
+43 Eloquent One Of Many Polymorphic
+
+
+
+
+Video model
+
+
+VideoConroller > index()
+
+
+44 Eloquent Many to Many Polymorphic Tutorial in Hindi / Urdu
+many to many relationship between 2 table: use many to many relationship(User & Role : user_role)
+many to many relationship in 3 or more tables: use polymorphic many to many relationship(Post, Tag, Video: taggable)
+
+
+Tag.php model
+
+
+
+
+
+
+PostController
+
+
+Posts table
+
+Tags table
+
+Taggables table
+
+
+PostController
+
+
+Posts table
+
+Taggables table
+
+
+
+We can use detach() and sync() as well
+
+
+
+
+TagController
+Get tag with posts(specific columns: title & description) and videos. We can’t hide pivot object. Because it contains relationships
+
+45 Eloquent with JSON Data Columns Tutorial in Hindi / Urdu
+
+
+
+
+TestController
+
+
+Create method
+
+
+Nested json create
+
+
+
+	
+
+If we don’t define to cast meta_data as json field, laravel will consider it as a text field. Cast defines which format data will be stored
+
+
+So cast it to json
+
+Select specific fields from json
+
+
+
+
+
+
+
+Check if meta_data->name has some value
+
+
+Update: following commented and non-commented will give the same result. But for save() method we’ll have to use AsArrayObject::class in $casts variable
+
+error:
+Solution:
+
+
+
+Remove key-value from json
+
+
+Add new key-value pair
+
+46 Observers & Model Events Tutorial in Hindi / Urdu
+
+If user gets deleted, all associated posts should be deleted same for comments
+Or if a post gets deleted its comments should be deleted.
+To achieve this we have two methods
+1 Model Events
+2 Observers
+
+booted() function gets called automatically, whenever we perform CRUD
+
+
+Traditional way to delete user & its related posts in Usercontroller delete() method
+
+
+Delete User with its related posts. Using Events
+
+
+Whenever a user gets deleted, related posts will be deleted with the help of an event. It makes code more clear.
+We’ll use the event model only if 1 or 2 events are there. But If there are too many events in model, model will become messi, we’ll use observer
+If we create a observer using cmd with –model, all events boiler plate will be created
+Model event automatically gets called. But we need to call observer manually
+
+
+
+If we don’t pass –model flag, the boiler events won’t present in observer
+
+UserController
+
+UserObserver
+
+AppServiceProvider
+
+
+PostController
+
+
+
+PostObserver
+
+
+If we want to skip event use ..Quietly() method. This can be used in if condition or testing. Not used much
+
+47 Query Scope Tutorial in Hindi / Urdu
+Query scopes: Reusable & Easy-to-Use query constraints for Eloquent models. We can minimize complex/common queries. Eg. following examples is trying to get active users, we created scope for it
+Local scopes
+Global scopes
+Local Scope:
+
+
+Tables: users(rel: posts), posts 
+Model: User, Post
+Controllers(resource): UserContoller, PostController
+Route: User, Post
+
+User model
+We can use where, whereIn, whereBetween, whereNot and so on…
+
+
+UserController index
+
+
+
+
+PostController index
+
+
+Global scope
+
+
+UserController
+We can select specific columns also. But if its relationship query, it’s primary and or foreign key must be specified.
+
+
+Global scope: 2nd way
+We can use other name(UserScope1) as well instead of UserScope
+Scope will be created under app/models/scopes/UserScope.php
+
+UserScope
+
+
+User model booted()
+
+
+UserController
+
+
+If we don’t want to use protected static booted method. We can can use following way:
+User model
+
+
+Remove Global scope
+
+
+UserController
+
+49 Get Specific Columns Data
+This isn't a new topic. But Minimize query and make faster
+Users table
+
+
+Id
+Name
+Email
+City
+Age
+Status
+1
+Yahoo Baba
+yahoobaba@email.com
+Delhi
+22
+1
+2
+Salman Khan
+salman@email.com
+Goa
+21
+1
+3
+Katrina Kaif
+katrina@email.com
+Delhi
+22
+0
+4
+John Abraham
+john@email.com
+Mumbai
+20
+1
+
+
+
+
+User::select(‘name’, ‘email’)
+          ->get();
+
+User::select(‘name’, ‘email’)
+          ->where(‘city’, ‘Delhi’)
+           ->get();
+
+
+User Model: many post()
+Post Model: single user()
+
+return User::select('name', 'city')
+            ->where('city', 'Delhi')
+            ->get();
+
+
+[
+  {
+    "name": "Yahoo Baba",
+    "city": "Delhi"
+  },
+  …
+]
+Same as above
+
+return User::where('city', 'Delhi')
+            ->get(['name', 'city']);
+
+
+
+
+[
+  {
+    "name": "Yahoo Baba",
+    "city": "Delhi"
+  },
+  …
+]
+If we don’t pass array and input value directly, It’ll select first value only(name)
+
+return User::where('city', 'Delhi')
+      ->get('name', 'email', 'city');
+[
+  {
+    "name": "Yahoo Baba"
+  },
+  …
+]
+return User::all(['name','email']);
+[
+  {
+    "name": "Yahoo Baba",
+    "email": "yahoobaba@email.com"
+  },
+  …
+]
+echo '<pre>';
+$users = User::all('name', 'email')
+            ->toArray();
+print_r($users);
+
+
+Array
+(
+    [0] => Array
+        (
+            [name] => Yahoo Baba
+            [email] => yahoobaba@email.com
+        )
+
+   ...
+
+)
+
+return User::where('city', 'Delhi')
+            ->pluck('name', 'email');
+
+
+{
+  "yahoobaba@email.com": "Yahoo Baba",
+  "katrina@email.com": "Katrina Kaif"
+}
+In pluck, we can pass 1 or 2 values. If we pass more than 2 params, it’ll be ignored. Won’t throw any error
+return User::where('city', 'Delhi')
+            ->pluck('name', 'email', 'city');
+
+
+{
+  "yahoobaba@email.com": "Yahoo Baba",
+  "katrina@email.com": "Katrina Kaif"
+}
+
+
+
+return User::find(1);
+
+
+{
+  "id": 1,
+  "name": "Yahoo Baba",
+  "email": "yahoobaba@email.com",
+  "city": "Delhi",
+  "age": "22",
+  "status": 1,
+  "email_verified_at": "2024-06-19T11:10:49.000000Z",
+  "created_at": null,
+  "updated_at": null
+}
+
+return User::find(1, ['name', 'email']);
+
+
+{
+  "name": "Yahoo Baba",
+  "email": "yahoobaba@email.com"
+}
+return User::find(2)->email;
+salman@email.com
+return User::where('city', 'Delhi')
+            ->first()->email;
+yahoobaba@email.com
+return User::where('city', 'Delhi')
+            ->value('email');
+yahoobaba@email.com
+Select columns with alias
+
+return Post::with('user:name as User Name,email as User Email,id')
+            ->get(['title', 'description', 'user_id']);
+
+
+[
+  {
+    "title": "News title 1",
+    "description": "Lorem ipsum",
+    "user_id": 1,
+    "user": {
+      "User Name": "Yahoo Baba",
+      "User Email": "yahoobaba@email.com",
+      "id": 1
+    }
+  }
+]
+
+return Post::with(['user' => function($query){
+            $query->select('id', 'name', 'email');
+        }])->get(['title', 'description', 'user_id']);
+
+
+[
+  {
+    "title": "News title 1",
+    "description": "Lorem ipsum",
+    "user_id": 1,
+    "user": {
+      "id": 1,
+      "name": "Yahoo Baba",
+      "email": "yahoobaba@email.com"
+    }
+  }
+]
+
+return Post::select(['title', 'description', 'user_id'])
+            ->withWhereHas('user', function($query){
+                $query->select('id', 'name', 'email')
+                ->where('city', 'Delhi');
+            })->get();
+
+
+[
+  {
+    "title": "News title 1",
+    "description": "Lorem ipsum",
+    "user_id": 1,
+    "user": {
+      "id": 1,
+      "name": "Yahoo Baba",
+      "email": "yahoobaba@email.com"
+    }
+  }
+]
+Multiple relationship
+
+return Post::select(['title', 'description', 'user_id', 'id'])
+ ->with([
+  'user' => function($query) {
+    $query->select('id', 'name', 'email');
+  },
+  'comments' => function($query) {
+    $query->select('post_id', 'id', 'detail');
+  }
+])->get();
+
+
+[
+  {
+    "title": "News title 1",
+    "description": "Lorem ipsum",
+    "user_id": 1,
+    "id": 1,
+    "user": {
+      "id": 1,
+      "name": "Yahoo Baba",
+      "email": "yahoobaba@email.com"
+    },
+    "comments": [
+      {
+        "post_id": 1,
+        "id": 1,
+        "detail": "Nice Post"
+      },
+      {
+        "post_id": 1,
+        "id": 2,
+        "detail": "Informative Post"
+      }
+    ]
+  }
+]
+//set select() in model
+return Post::with('user')->first();
+
+
+{
+  "id": 1,
+  "title": "News title 1",
+  "description": "Lorem ipsum",
+  "user_id": 1,
+  "created_at": null,
+  "updated_at": null,
+  "user": {
+    "name": "Yahoo Baba",
+    "email": "yahoobaba@email.com",
+    "id": 1
+  }
+}
+
+
+User model
+public function posts() {
+        return $this->hasMany(Post::class);
+    }
+
+Post model
+public function user() {
+        return $this->belongsTo(User::class)->select(['name', 'email', 'id']);
+    }
+
+
+public function comments() {
+        return $this->hasMany(Comment::class);  
+    }
+
+Comment model
+public function post() {
+        return $this->belongsTo(Post::class);
+    }
+
+Post model: everytime get post with user data. No matter we use find(), first(), get() or any related fetching method
+Post model
+protected $with = ['user'];
+
+Controller
+$posts = Post::get();
+$post = Post::find(1);
+
+If we have used global with and we don’t want user relationship to list. We’ll use:
+$posts =  Post::without('user')->find(2);
+
+Get only specific relationship
+$posts =  Post::withOnly('user')->get();
+
+Following load method is useful. When we get only user details and after sometime/some code if we want post relationship, we can use:
+$user = User::all();
+$user->load('post');
+50 Image & File Upload
+
+Steps for Image / Other File upload
+
+
+
+1 store(‘images’): Storage > App > images(create folder if doesn’t exists) //local
+2 store(‘images’, ‘public’): Storage > App > Public > images(create folder if it doesn't exist). filesystem disk(1 local & 2 Public) //public
+
+Difference:
+App: We cannot read file here(locked folder)
+Public: We can read file here
+
+store() method automatically renames the file to a 16 character hash method. Its useful against hac*er activity. Some people give filename with malicious purpose
+
+store() & storeAs() will always use a storage folder. But in move() we can use other folder as well
+
+accept=	image/*  	video/* 	audio/*		.jpg,.png,.jpeg
+
+store(), storeAs() saves file in storage folder only &  returns file uploaded path
+$file->store(‘image’, ‘local’): save file in app/image folder
+$file->storeAs(‘image’, $fileName, ‘public’): save file in app/public/image folder
+$file->move(public_path(‘uploads’), ‘filename’): Useful to upload file in any folder in the project(current root public).
+$file->getClientOriginalName(): returns file original name
+$file->getClientOriginalExtension(): returns file extension
+$file->extension()	returns extension. This is hack proof. In getClientOriginalExtension() user may rename/modify filename with extension 
+$file->hashName(): returns hashName
+$file->getClientMimeType(): returns mimeType eg. image/jpg or document/pdf & so on
+$file->getSize(): returns the size of file in bytes
+
+UserController 
+
+
+We can use move() method for uploading a file instead of store() as well
+
+
+file-upload.blade.php
+
+
+file-update.blade.php
+
+IMP
+
+
+
+Though we store images in the Storage folder, we don’t access them directly for security reasons. We create a symbolic link(shortcut/images) under the public(root folder) directory and access from here. To create such a link use the following. This will create storage shortcut folder under root public folder
+$ php artisan storage:link
+
+51 Accessors & Mutators
+Accessors
+
+
+Laravel 10 & 11
+
+Mutator
+
+
+
+Laravel 10 & 11
+
+class UserController extends Controller
+{
+    public function index()
+    {
+        $users = User::simplepaginate(10);
+        return view('home', compact('users'));
+    }
+
+
+    public function create()
+    {
+        return view('user.create');
+    }
+
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'username'  =>  'required',
+            'email'     =>  'required|email',
+            'salary'    =>  'required|numeric',
+            'dob'       =>  'required',
+            'pass'      =>  'required'
+        ]);
+
+
+        $user = User::create([
+            'username'  =>  $request->username,
+            'email'     =>  $request->email,
+            'salary'    =>  $request->salary,
+            'dob'       =>  $request->dob,
+            'password'  =>  $request->password
+        ]);
+
+
+        return redirect()->route('users.index')->with('status', 'New user created successfully');
+    }
+
+
+    public function show(string $id)
+    {
+        $user = User::find($id);
+        return view('users.show', compact('user'));
+    }
+
+
+    public function edit(string $id)
+    {
+        $user = User::find($id);
+        return view('users.edit', compact('user'));
+    }
+
+
+    public function update(Request $request, string $id)
+    {
+        $request->validate([
+            'username'  =>  'required',
+            'email'     =>  'required|email',
+            'salary'    =>  'required|numeric',
+            'dob'       =>  'required',
+            'pass'      =>  'required'
+        ]);
+
+
+        $user = User::where('id', $id)->update([
+            'username'  =>  $request->username,
+            'email'     =>  $request->email,
+            'salary'    =>  $request->salary,
+            'dob'       =>  $request->dob,
+            'password'  =>  $request->password
+        ]);
+
+
+        return redirect()->route('users.index')->with('status', 'User updated successfully');
+    }
+
+
+    public function destroy(string $id)
+    {
+        $user = User::find($id);
+        return redirect()->route('users.index')->with('status', 'User deleted successfully');
+    }
+}
+
+By default Number class is disabled. We’ll have to enable it
+
+Uncomment intl if commented. Restart wamp & server
+
+User model
+public function setEmailAttribute($value) {
+        $this->attributes['email'] = strtolower($value);
+    }
+
+
+    public function setUserNameAttribute($value) {  //In table we used snake_case, but for mutator we'll use PascalCase
+        $this->attributes['user_name'] = strtolower($value);
+    }
+
+
+    public function setPasswordAttribute($value) {
+        $this->attributes['password'] = strtolower($value);
+    }
+
+
+    public function getDobAttribute($value) {
+        return date('d M Y', strtotime($value));
+    }
+
+
+    public function getUserNameAttribute($value) {
+        return ucwords($value);
+    }
+
+
+    public function getSalaryAttribute($value) {
+        // return Number::currency($value, in:'EUR');
+        return Number::format($value);
+    }
+
+Laravel 10 & 11: People still using old method
+    protected function UserName(): Attribute {
+        return Attribute::make(
+            get: fn(string $value) => ucwords($value),
+            set: fn(string $value) => strtolower($value)
+        );
+    }
+52 Components
+
+Steps to create component
+
+
+
+$ php artisan make:component alert
+app\View\Components\alert.php
+resources\views\components\alert.blade.php
+
+We can create folder as well for component
+$ php artisan make:component forms/input 
+app\View\Components\forms\input.php
+resources\views\components\forms\input.blade.php
+
+resources/views/compoents/alert.php
+<div class="alert alert-{{ $type }}" role="alert">
+    {{ $message }}
+</div>
+
+resources/views/component_demo.blade.php
+<body>
+    <x-alert type="success" message="This is the message1"/>
+    <x-alert type="danger" message="This is the message2"/>
+    <x-alert type="info" message="This is the message3"/>
+</body>
+
+app/View/Components/alert.php
+    public $type = '';
+    public $message = '';
+   
+    public function __construct(string $type, string $message) {
+        $this->type = $type;
+        $this->message = $message;
+    }
+
+If we are passing same name in constructor and assigning to same name variables of class, then we can use php 8 new feature(constructor property promotion: If we want to assign default value, we’ll have to assign for all)
+app/View/components/alert.php
+public function __construct(public string $type, public string $message) {
+    }
+
+3 ways of passing data from view to  component
+1 message="{{ $message1 }}"
+	2 :message="$message2"
+	3 :$message
+Constructor property promotion with default values
+Validating data(eg. types)
+Receive other attributes in components with $attributes. This will show attributes in the component. But will not show class. To do so we’ll use $attributes->merge(). Merge will merge all class values(from blade as well as component). But if we pass other keys like role=”alert”, If blade is passing role, component will accept it. If the attribute isn’t passed, It’ll set default role=’alert’ in the component. If we want other attributes should also get merged, eg. for role we’ll use ‘role’=>$attributes->prepends(‘alert’)
+We can have conditional classes: $attributes->class([‘alert-dismissible fade show’ => $dismissable])
+
+app/View/Components/alert.php 
+protected $types = [
+        'success',
+        'danger',
+        'info'
+    ];
+
+
+    public function __construct(public string $type='info', public string $message='default message', public $dismissible =false){
+
+
+    }
+    
+    public function validType() {
+        return in_array($this->type, $this->types) ? $this->type : 'info';
+    }
+
+resources/views/components/alert.blade.php
+<div {{ $attributes->class(['alert-dismissible fade show' => $dismissible])->merge(['class' => 'alert alert-'.$validType, 'role'=>$attributes->prepends('alert')]) }} >
+    {{ $message }}
+    @if($dismissible)
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>        
+    @endif
+</div>
+
+resources/views/components/component_demo.blade.php
+@php
+        $message1 = 'traditional attribute with value';
+        $message2 = 'Vue style';
+        $message = 'attribute and variable same'
+    @endphp
+    <x-alert type="success" message="{{ $message1 }}" id="firstAlert" class="m-4" role="flash"/>
+    <x-alert type="danger" dismissible :message="$message2"/> {{-- OR dismissible='true' --}}
+    <x-alert :$message/>
+    <x-alert type='infoooo'/>
+
+O/P
+
+53 Slots & Advance Component Features
+
+
+app/View/Components/alert.php
+protected $types = [
+        'success',
+        'danger',
+        'info'
+    ];
+
+
+    public function __construct(public string $type='info', public string $message='default message', public $dismissible =false){
+
+
+    }
+
+
+    public function validType() {
+        return in_array($this->type, $this->types) ? $this->type : 'info';
+    }
+
+
+    public function link($text, $target='#') {
+        return new HtmlString('<a href="'.$target.'" class = "alert-link">'.$text.'</a>');
+    }
+
+resources/views/components/alert.blade.php
+<div {{ $attributes->class(['alert-dismissible fade show'=> $dismissible])->merge(['class' => 'alert alert-'.$validType, 'role'=>$attributes->prepends('alert')]) }} >
+    @isset($title)
+        <h4 {{ $title->attributes->class(['alert-heading']) }}>{{ $title }}</h4>
+        <hr>
+    @endisset
+
+
+    @if($slot->isEmpty())
+        <p>This is default content</p>
+    @else
+        {{$slot}}
+    @endif
+    @if($dismissible)
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>        
+    @endif
+</div>
+
+resources/views/component_demo.blade.php
+<x-alert>
+        <x-slot:title class="font-bold">
+            Heading goes here
+            {{$component->link('Just testing', 'https://yahoobaba.com')}}
+        </x-slot>
+        <p class="mb-0">
+            things nice and tidy.
+        </p>
+    </x-alert>
+
+Another way of creating a component(Inline component: no separate component file)
+Component.php
+public function render(): View|Closure|string
+    {
+        // return view('components.alert');
+        return <<<'blade'
+            /* Component code here */
+        blade;
+    }
+
+If we don’t want to create a separate component file and just want inline html. We can use the following command.
+$ php artisan make:component card --inline
+New file app\View\Components\card.php
+public function render(): View|Closure|string
+    {
+        return <<<'blade'
+<div>
+    <!-- I begin to speak only when I am certain what I will say is not better left unsaid. - Cato the Younger -->
+</div>
+blade;
+    }
+
+Component_demo.blade.php
+<x-card/>
+
+Dynamic component
+Component_demo.blade.php
+@php
+$component = 'card';
+@endphp
+<x-dynamic-component :component="$component" class="m-4" />
+
+Anonymous component(no blade class)
+views/components/form.blade.php
+@props([
+    'action',
+    'method'=>'POST'
+])
+<form action="{{ $action }}" method="{{ $method === 'GET' ? 'GET' : 'POST' }}" {{ $attributes }}>
+    @csrf
+    @unless (in_array($method, ['GET', 'POST']))
+        @method($method)        
+    @endunless
+    {{$slot}}
+</form>
+
+component_demo.blade.php
+<x-form action="/somepage" method='GET' id="firstForm" class="myForm">
+        <input type="text" name="name">
+        <button type="submit">Save</button>
+    </x-form>
+54 Blade Template with Components
+
+php artisan make:component layout
+php artisan make:component form
+
+Layout.blade.php
+
+
+Home.blade.php (same for edit, show)
+
+
+
+Form.blade.php
+
+
+Adduser.blade.php
+
+
+Updateuser.blade.php
+
+55 Authentication
+Login Registration and so on
+
+Laravel Authentication
+Session based authentication
+Manually authentication with Auth class
+Starter Kit
+API authentication
+
+3 Starter Kit
+Laravel Breeze
+Laravel Jetstream
+Laravel Fortify
+Registration / Login page
+Forgot password
+Email verification
+Two-factor authentication
+
+
+4 API authentication
+Sanctum
+Passport
+
+Steps to authentication
+
+Auth::attempt()	validate user’s email and password
+Auth::user() 		returns authenticated user info
+Augh::id() 		returns authenticated user’s id
+Auth::check()		check user is logged in or not
+Auth::guest()		Opposite of Auth::check(). Validates if user isn’t logged in
+Auth::logout()		logout user and destroy session
+
+Auth class uses session based authentication(it stores in storage/framework/sessions folder).
+When we logout, the session value gets deleted.
+
+
+Starter kit uses Auth
+
+We can use Auth::attempt in any controller
+Auth method by default validates in users table and compares with email & password
+
+Users table
+
+config/auth.php
+'guards' => [
+    'web' => [
+        'driver' => 'session',  //session authentication
+        'provider' => 'users',  //table name. We can change to other table as well
+    ],
+],
+
+
+'providers' => [
+    'users' => [
+        'driver' => 'eloquent',
+        'model' => env('AUTH_MODEL', App\Models\User::class),
+    ],
+
+User.php
+protected function casts(): array
+{
+    return [
+        'password' => 'hashed'  //mutator. hashed password
+    ];
+}
+
+
+
+
+
+
+Web.php
+
+
+56 Middleware
+
+
+3 types of middlewares
+Route middleware: Used most. specific page restriction
+Middleware groups: multiple conditions on a group
+Global middleware: restriction/check on every request	
+
+
+Bootstrap/app.php is introduced in laravel 11 to deal with middlewares. Before this there was a file called App/Kernel.php to deal with middlewares
+
+
+
+Whenever we create a middleware using php artisan, the middleware will contain 2 methods:
+1 handle(): executed before accessing route
+2 terminate(): executed when leaving route
+
+php artisan make:middleware ValidUser
+
+
+php artisan make:middleware TestUser
+
+
+Web.php
+
+
+UserController
+
+
+
+Middleware alias, group
+Bootstrap/app.php
+
+
+Web.php
+We can group middleware too
+Except middleware for specific route(withoutMiddleware())
+
+
+Group middleware route
+
+
+Or on individual route
+
+
+
+Pass extra parameter in middleware
+Web.php
+
+ValidUser.php
+
+
+Laravel built-in route(auth) to check authentication
+
+
+GLOBAL middleware. It applies to every route. Such middlewares are used for log info save. Which pages visited. 
+bootstrap/app.php
+
+GLOBAL Multiple middleware 
+
+
+We can set priority of middlewares also
+$middleware->priority([
+]);
+
+Grouping
+bootstrap/config.php:
+$middleware->group(‘web’. [
+]);
+$middleware->group(‘api’. [
+]);
+57 Session
+Database stores data permanently
+Session stores data temporarily on server
+Session remains for 2 hours
+We can set session lifetime in .env or config/session.php. If we set in .env, we don’t need to set in session.php
+Session gets stored in storage/frameworks/sessions
+
+Uses of session
+User authentication
+Shopping cart
+Flash messages
+Multi-step form
+User preferences(eg. Our website is by default russian language and if user changes spanish, next pages should have spanish selected)
+Form data preservation(after form validation fails, data gets vanished, we can preserve through session)
+Captcha verification
+
+Session methods:
+session()->has('key'); //returns false if session isn’t created. Even if there is a session but value is null, It’ll return null
+session()->exists('key'); //returns true if there is a session. Even it’s value is null
+
+
+session()->only(['key1', 'key2']);
+session()->except(['key1', 'key2']);
+
+
+session()->increment('count');
+session()->decrement('count');
+
+
+session()->regenerate();
+
+
+session()->flash('key', 'your message comes here');
+
+In .env file change DB_CONNECTION from sqlite to mysql
+DB_CONNECTION=mysql
+
+In .env file change SESION_DRIVER from database to file
+SESSION_DRIVER=file
+SESSION_LIFETIME=120
+
+
+TestController
+public function getSession() {
+    $all = session()->all(); //Get all session values array
+    $value = session()->get('name'); //get specific session value
+    $value2 = session('name');    //get specific session value shorthand
+    $valueDefault = session('namess', "Hello");  //Default value(Hello)
+    $except = session()->except(['year', 'landmark']);    //except session class, return all session values array
+    $only = session()->only(['name', '_previous']);    //Return only specified session values array
+    $has = session()->has('name') ? session()->get('name') : 'Name key doesn\t exists';
+    $exists = session()->exists('name') ? session()->get('name') : 'key doesn\t exists';    
+    $increment = session()->increment('year');  //default increment by 1
+    $incrementBy = session()->increment('year', $incrementBy = 4);
+    $decrement = session()->decrement('year');  //default decrement by 1
+    $decrementBy = session()->decrement('year', $decrementBy = 2);
+    return view('welcome');
+}
+public function setSession(Request $request) {
+        session(['name' => 'Khushal']); //setting session
+        session()->put('class', 'MCA');
+        $request->session()->put('year', 2015); //Request class can also be used with session()-put()
+        session([
+        'city' => 'surat',
+        'landmark'=> 'regent'
+    ]);
+    session()->regenerate(); //_token always returns same value, some Hac*er can catch it. so regenerate will modify existing _token value
+    session()->flash('status', 'Session saved successfully');
+    return redirect('get-session');
+}
+public function deleteSession() {
+    session()->forget(['name', 'class']);   //Remove specific sessions
+    session()->flush(); //Remove all sessions except default(_token: value won't change). If we visit other page, 2 extra session will be created(_previous, _flash)
+    session()->invalidate();    //remove all session values. _previous, _flash will be empty & _token will be updated
+    return redirect('get-session');
+}
+
+Welcome.blade.php
+@if(session('status'))
+    {{ session('status') }}
+@endif
+
+For flash message we called setSession. We set flash session(‘status’): scenario:
+1 redirect to getSession(). In getSession() we rendered the view and captured flash value in view.
+2 redirect to getSession(). Redirect to deleteSession(), at the start of this function we rendered the view and we couldn’t capture flash value in view.
+Laravel 11 New Features
+What is new in Laravel 11
+Minimum requirement PHP 8.2	//without min PHP 8.2, laravel 11 won’t even get installed
+Improve folder structure 	//removed unwanted/unnecessary files/code(api, broadcasting, etc)
+Default database SQLite
+Laravel Reverb - WebSocket server	//Official package, no need to depend on 3rd party socket
+New Once method
+Model casts change
+Per-second rate limiting
+Eager loading limit
+New artisan commands
+Named arguments removed
+
+
+Console & Exceptions folder removed from app folder
+
+
+By default only one Controller.php file inside Http/Controllers. Middleware by default removed. If we create middleware through artisan, the folder will be created inside bootstrap folder
+
+
+Providers.php file added inside bootstrap. Earlier it was inside the app folder.
+In app.php now we can add middlewares, service providers, exception handling
+
+
+Broadcasting, cors, hashing, sanctum, view removed by default
+
+
+Inside the database only database.sqlite new file added. Maximum we use MySQL
+
+
+No change in public folder
+
+
+No change in resources folder
+
+
+api.php & channels.php(broadcasting) removed by default
+
+
+No change in storage folder
+
+
+Tests folder used to create test cases. Only CreatesApplication.php file removed by default
+
+
+No changes in vendor folder
+
+.env file
+Laravel 10
+Laravel 11
+DB_CONNECTION=mysql
+DB_CONNECTION=sqlite //default, change to mysql
+DB config commented
+SESSION_DRIVER=file
+SESSION_DRIVER=database //default, change to file.
+sqlite: session are made in database
+mysql:  so in laravel 11 it is database
+
+
+config/database.php > mysql 
+'collation' => env('DB_COLLATION', 'utf8mb4_unicode_ci'),
+Above value and db value must be the same. By default they are. Or else it’ll throw an error utf8mb4_unicode_ci
+
+58 Gates
+Gates VS Middlewares
+Gates only work with HTTP requests(routes file)
+Gate provides more facilities. We can add gate condition on routes too
+We can show/hide some view using gates, which is not possible with middlewares
+
+Gates conditions can be applied to:
+Route
+Blade files
+Controller
+Middlewares
+
+Conditions examples
+Admin can only access Admin panel or specific page
+User must be a valid age
+Valid user can view and update a user profile and settings page
+User can update or delete its own posts only
+User can only edit its own comments or may Admn
+Only admin can approve the post
+
+
+1 Route
+
+
+2 Blade
+
+
+
+
+3 Controller
+
+
+4 Middleware
+
+
+Users table
+
+
+Posts table
+
+
+
+
+AppServiceProvider.php > boot()
+
+
+Controller gate
+
+
+If we use authorize() method and if condition gets satisfied the next statements will get executed or else redirect to 403 unauthorized access page 
+
+Blade gate
+dashboard.blade.php
+
+Using can
+
+Or
+
+
+Route gate User gets redirected to 403 page if condition fails
+
+Multiple conditions
+
+
+Using can
+
+
+Now, If we want to show Profile page to only a person who owns it
+
+
+AppServiceProvider.php boot()
+
+Controller
+
+Same can be achieved using authorize() method
+
+
+Similarly allow user to edit only his/her post
+
+
+We can do such thing for delete post as well
+
+any(): We can pass multiple gate names(just for info). It returns true, if anyone condition is true
+
+none(): returns true if all conditions are false
+
+
+AppServiceProvider
+before(): executed before any gate executed
+after(): executed after any gate executed
+
+59 Policies
+Gates and policies:(Only the method of making them is different)
+Both work the same. 
+Conditions are also checked same
+The way of using
+
+Conditions on:
+Route, Blade, Controller & Middleware
+
+In Gates we put all the gates inside AppServiceProvider, this way as project size grows, AppServiceProvider file becomes messy. So Policies is here to create separate files 
+Gates are used when only limited conditions are to be checked. Like related to user
+Policies are used when we are targeting specific model file and want to apply conditions related to it only
+
+
+
+Route
+
+
+Blade
+
+
+Controller
+
+
+If we create Policy through artisan with its standard naming convention(eg. model: Book, policy: BookPolicy),
+It’ll create a BookPolicy.php under the Policies folder. We don't need to import/define Policy anywhere.Policy automatically works. We don’t need to register in AppServiceProvider
+
+$  php artisan make:policy BookPolicy
+$  php artisan make:policy BookPolicy --model=Book  //Resource policy(viewAny, view, create, update, delete, restore, forceDelete)
+
+BookPolicy.php
+public function view(User $user, Book $book): bool
+    {
+        return $user->id === $book->user_id;
+    }
+public function update(User $user, Book $book): bool
+    {
+        return $user->id === $book->user_id;
+    }
+public function delete(User $user, Book $book): bool
+{
+    return $user->id === $book->user_id;
+}
+
+BookController.php
+public function show(Book $book) {
+        Gate::authorize('view', $book);
+        return view('books.show', compact('book'));
+    }
+public function update(Request $request, Book $book) {
+        // Gate::authorize('view', $book);   //OR
+        if($request->user()->cannot('update', $book)) {
+            abort(403, 'You are not authorized');
+        }
+	  ...
+    }
+public function destroy(Book $book) {
+        Gate::authorize('delete', $book);
+        $book->delete();
+    }
+
+Index.blade.php
+@canany contains an array. will return true if any one condition is true
+
+
+We can use Auth for policy as well in blade file
+
+Reverse condition
+
+
+Route
+Route multiple conditions using middleware()
+
+Route multiple conditions using can()
+
+
+If we didn’t follow policy creation standard. eg place policy under different folder or used different name. We’ll have to register policy manually(AppServiceProvider)
+
+60 Send Email
+When we send Email?
+SignUp confirmation
+Forgot password
+Send OTP for login
+Sending newsletter
+Update personal data like password
+Send bill from Ecommerce website
+
+Email servers: Gmail, yahoomail, hotmail
+We can create our own(email created through cpanel or else) email server also. We can fill our settings in .env file & in config/email.php 
+
+Mostly username & from_address are same. But in some cases these can be different
+
+
+
+Visit gmail 
+manage your google accounts 
+search “App passwords(security)” & select
+input password to login 
+Input App name & click on create 
+Password will be generated (after 4 letters there will be one space, remove it).
+
+
+$ php artisan make:controller EmailController
+app\Http\Controllers\EmailController.php
+$ php artisan make:mail welcomeemail
+\app\Mail\welcomeemail.php
+
+web.php
+Route::get('send-email', [EmailController::class, 'sendEmail']);
+
+.env
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=helloyahoobaba@gmail.com
+MAIL_PASSWORD=sdf6897s456s
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS="helloyahoobaba@gmail.com"
+MAIL_FROM_NAME="${APP_NAME}"
+
+EmailController.php
+public function sendEmail(){
+   $toEmail = "findjqeury@gmail.com";
+   $moreUser = 'go@gmail.com';
+   $message = 'Hello, Welcome to our website';
+   $subject = 'Welcome to yahoobaba';
+   $details = [
+       'name' => 'John Doe',
+       'product' => 'Test product',
+       'price' =>250
+   ];
+   $request = Mail::to($toEmail)->cc($moreUser)->send(new welcomeemail($message, $subject, $details));
+   dd($request);
+}
+
+Mail/welcomeemail.php
+public $message;
+public $subject;
+private $details; //If its public, It'll be available in blade, but if its private, we'll use WITH param in content()
+public function __construct($message, $subject, $details) {
+   $this->message = $message;
+   $this->subject = $subject;
+   $this->details = $details;
+}
+public function envelope(): Envelope {
+   return new Envelope(
+       subject: $this->subject,
+   );
+}
+public function content(): Content {
+   return new Content(
+       //text:'mail.welcome-mail'    //render view file as HTML source in email
+       view: 'mail.welcome-mail',
+       with: ['details' => $this->details]
+   );
+}
+public function attachments(): array {
+   return [];
+}
+
+welcome-mail.blade.php
+   <title>{{ $subject }}</title>
+</head>
+<body>
+   <h3>{{ $subject }}</h3>
+   <p>{{ $message }}</p>
+   <p>{{ $details['name'] }}</p>
+   <p>{{ $details['product'] }}</p>
+   <p>{{ $details['price'] }}</p>
+</body>
+
+If we dd() response of mail, Output and recipient gmail inbox
+
+
+We can send email multiple users(make array of emails and loop)
+$emails = [
+   'abc@gmail.com',
+   'xyz@yahoo.com'
+];
+foreach($emails as $recipient) {
+   Mail::to($recipient)->send(new welcomeemail($message, $subject, $details));
+}
+
+If we have lots of emails(eg. thousands) to send, our server will be hanged. So laravel provides queues.
+We can send 50-50 emails on each queue.once 50 emails sent, server will rest for 1 or 2 sec and again resume other 50 emails sending process
+61 Send Email with Attachment
+We can send attachment with file in any format: HTML, Text, Attached file, PDF, Word, Excel, Image, Video, etc
+Important point in this topic: mailable class > attachment() method
+
+
+
+In chrome there is an extension to fill fake/dummy data
+
+
+welcome-mail.blade.php
+   <title>{{ $subject }}</title>
+</head>
+<body>
+   <h3>Hello, Admin</h3>
+   <p>Name: {{ $details['name'] }}</p>
+   <p>Email: {{ $details['email'] }}</p>
+   <p>Subject: {{ $details['$subject'] }}</p>
+   <p>Message: {{ $details['message'] }}</p>
+</body>
+
+EmailController.php
+public function contactForm() {
+   return view('contact-form');
+}
+public function sendContactEmail(Request $request) {
+   $request->validate([
+       'name' => 'required',
+       'email' => 'required|email',
+       'subject' => 'required|min:5|max:100',
+       'message' => 'required|min:10|max:255',
+       'attachment' => 'required|mimes:pdf,doc,docx,xlx,xlsx|max:2048'
+   ]);
+   $fileName = time().'.'.$request->file('attachment')->extension();
+   $request->file('attachment')->move('uploads', $fileName);
+
+
+   $adminEmail = "findjqeury@gmail.com";
+   $response = Mail::to($adminEmail)->send(new welcomeemail($request->all(), $fileName));
+   if($response) {
+       return back()->with('success', 'Thanks for contacting');
+   } else {
+       return back()->with('error', 'Unable to submit, try again');
+   }
+   dd($fileName);
+}
+
+Mail/welcomeemail.php
+public function __construct($request, $fileName) {
+   $this->request = $request;
+   $this->fileName = $fileName;
+}
+public function envelope(): Envelope {
+   return new Envelope(
+       subject: 'Contact Form',
+   );
+}
+public function content(): Content {
+   return new Content(
+       view: 'mail.welcome-mail'
+   );
+}
+public function attachments(): array {
+   $attachments = [];
+   if($this->fileName) {
+       $attachments = [
+           Attachment::fromPath(public_path('/uploads/'.$this->fileName))
+       ];
+   }
+   return $attachments;
+}
+
+The attachment images will be only visible in live server
+
+Useful Attachment methods:
+Attachment::fromStorage(‘/path/to/file’);
+Attachment::fromStorageDisk(‘s3’, ‘/path/to/file’);
+<img src=”{{ $message->embed($pathToImage) }}”>
+62 API
+XML: Oldest, difficult to understand
+JSON: Google created its own format
+GraphQL: Facebook created its own format
+
+Laravel packages for API
+1 Sanctum: small/medium/simple project
+2 Passport: large/complex
+
+The way of accessing these APIs are almost the same as traditional laravel. We can use our own style as well for apis
+
+Sanctum: It saves a token in the database if authentication is successful. If successful, it returns a token. We can save in localstorage/sessions/cookies. We can use it throughout the project. If fails, it returns nothing
+If we are using Sanctum, we aren’t required to use sessions. Because it saves a token in the database. Whenever we hit request, sanctum sends token to database and verifies
+
+
+
+
+
+API PROJECT:
+AuthController
+Registration
+Login
+Logout
+
+PostController
+Show all posts
+Show single post
+Store post 
+Update post
+Delete post
+Upload image with APIs
+
+It will save a token in the database and return as a response. We can save it in localstorage/session/cookie
+Token can be of different type. But sanctum uses bearer token
+
+$ php artisan make:migration create_posts_table
+$ php artisan install:api 	
+$ > yes		//as it's a new project, it may ask to migrate table. Input yes
+$ php artisan make:controller API/AuthController
+$ php artisan make:controller API/PostController --api
+$ php artisan make:controller API/BaseController //for common response OR we can create helper
+$ php artisan make:model Post
+$ php artisan serve
+
+//php artisan install:api  command will install sanctum package as well as create new files:
+config/sanctum.php (expiration)
+web/api.php
+migrations/2024_07_11_063130_create_personal_access_tokens_table
+
+
+$request->validate() method redirects back to source if validation fails
+Validator::make() method gives us control to handle validation errors.
+
+
+This postman is useful when we are working on android/ios/vue/react/angular
+
+SOURCE:
+
+User.php 
+class User extends Authenticatable
+{
+    use HasFactory, Notifiable, HasApiTokens;
+
+Post.php
+protected $fillable = ['title', 'description', 'image'];
+
+Api.php
+Route::post('signup', [AuthController::class, 'signup']);
+Route::post('login', [AuthController::class, 'login']);
+Route::middleware('auth:sanctum')->group(function(){
+    Route::post('logout', [AuthController::class, 'logout']);
+    Route::apiResource('posts', PostController::class);
+});
+
+BaseController
+public function sendResponse($result, $message) {
+    $response = [
+        'success' => true,
+        'data' => $result,
+        'message' => $message
+    ];
+    return response()->json($response, 200);
+}
+public function sendError($error, $errorMessage = [], $code = 404) {
+    $response = [
+        'success' => false,
+        'message' => $error
+    ];
+    if(!empty($errorMessage)) {
+        $response['data'] = $errorMessage;
+    }
+    return response()->json($response, $code);
+}
+
+AuthController
+class AuthController extends Controller
+{
+    public function signup(Request $request) {
+        $validateUser = Validator::make(
+            $request->all(),
+            [
+                'name' => 'required',
+                'email' => 'required|email|unique:users,email',
+                'password' => 'required',
+            ]
+        );
+        if ($validateUser->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation Error',
+                'errors' => $validateUser->errors()->all()
+            ], 401);
+        } else {
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => $request->password
+            ]);
+            return response()->json([
+                'status' => true,
+                'message' => 'User created successfully',
+                'user' => $user
+            ], 200);
+        }
+    }
+    public function login(Request $request) {
+        $validateUser = Validator::make(
+            $request->all(),
+            [
+                'email' => 'required|email',
+                'password' => 'required',
+            ]
+        );
+        if ($validateUser->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Authentication fails',
+                'errors' => $validateUser->errors()->all()
+            ], 401);
+        }
+        if(Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+            $authUser = Auth::user();
+            return response()->json([
+                'status' => true,
+                'message' => 'User Logged in successfully',
+                'token' => $authUser->createToken('API Token')->plainTextToken, //predefined key
+                'token_type' => 'bearer'    //predefined key
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => false,
+                'message' => 'Email & Password does not matched.',
+                'errors' => $validateUser->errors()->all()
+            ], 401);
+        }    
+    }  
+    public function logout(Request $request) {
+        $user = $request->user();
+        $user->tokens()->delete(); //delete all related tokens
+        //$user->tokens('API KEY')->delete(); //delete specific token on user
+        return response()->json([
+            'status' => true,
+            'user' => $user,    //optional
+            'message' => 'You Logged out successfully'
+        ], 200);
+    }
+}
+
+PostController
+use App\Http\Controllers\API\BaseController as BaseController;
+
+
+class PostController extends Controller
+{
+    public function index() {
+        $data['posts'] = Post::all();
+        return $this->sendResponse($data, 'All posts data');
+    }
+    public function store(Request $request) {
+        $validatePost = Validator::make(
+            $request->all(),
+            [
+                'title' => 'required',
+                'description' => 'required',
+                'image' => 'required|mimes:png,jpg,jpeg,gif',
+            ]
+        );
+        if ($validatePost->fails()) {
+            return $this->sendError('Validation Error', $validatePost->errors()->all());
+        }  
+        $img = $request->image;
+        $ext = $img->getClientOriginalExtension();
+        $imageName = time().'.'.$ext;
+        $img->move(public_path().'/uploads', $imageName);
+        $post = Post::create([
+            'title' => $request->title,
+            'description' => $request->description,
+            'image' => $imageName
+        ]);        
+        return $this->sendResponse($post, 'Post created successfully');
+    }
+    public function show(string $id) {
+        $data['post'] = Post::select(
+            'id',
+            'title',
+            'description',
+            'image'
+        )->where('id', $id)->get();
+        return $this->sendResponse($data, 'Your single post');
+    }
+    public function update(Request $request, string $id) {
+        $validatePost = Validator::make(
+            $request->all(),
+            [
+                'title' => 'required',
+                'description' => 'required',
+                'image' => 'required|mimes:png,jpg,jpeg,gif',
+            ]
+        );
+        if ($validatePost->fails()) {
+            return $this->sendError('Validation Error', $validatePost->errors()->all());
+        }  
+        $postImage = Post::select('id', 'image')->where(['id' => $id])->get();
+        if(!empty($request->image)) {
+            $path = public_path().'/uploads/';
+            if($postImage[0]->image != '' && $postImage[0]->image != null) {
+                $old_file = $path.$postImage[0]->image;
+                if(file_exists($old_file)) {
+                    unlink($old_file);
+                }
+            }
+            $img = $request->image;
+            $ext = $img->getClientOriginalExtension();
+            $imageName = time().'.'.$ext;
+            $img->move(public_path().'/uploads', $imageName);
+        } else {
+            $imageName = $postImage->image;
+        }
+       
+        $post = Post::where(['id' => $id])->update([
+            'title' => $request->title,
+            'description' => $request->description,
+            'image' => $imageName
+        ]);
+        return $this->sendResponse($post, 'Post updated successfully');
+    }
+    public function destroy(string $id) {
+        $imagePath = Post::select('image')->where('id', $id)->get();
+        $filePath = public_path().'/uploads/'.$imagePath[0]->image;
+        unlink($filePath);
+        $post = Post::where('id', $id)->delete();
+        return $this->sendResponse($post, 'Your post have been removed');
+    }
+}
+
+Requests-Response
+
+Signup
+
+
+Login
+POST http://127.0.0.1:8000/api/login 
+email: kbm@gmail.com
+password: 123
+O/P
+{
+    "status": true,
+    "message": "User Logged in successfully",
+    "token": "2|8PYTGZS3fR9Xwlfl3kC1gsuVxcpNiBuh5o2AVOZ378fd0491",
+    "token_type": "bearer"
+}
+It’ll create(save) as many tokens in tables as we hit login. In our case we hit 2 times
+
+
+Automatically all related user tokens will be removed from table on logout
+
+Logout (bearer token)
+POST http://127.0.0.1:8000/api/logout 
+Authorization: bearer token
+O/P
+{
+    "status": true,
+    "user": {
+        "id": 1,
+        "name": "Khushal",
+        "email": "kbm@gmail.com",
+        "created_at": "2024-07-11T08:41:06.000000Z",
+        "updated_at": "2024-07-11T08:41:06.000000Z"
+    },
+    "message": "You Logged out successfully"
+}
+
+Save post (bearer token)
+POST http://127.0.0.1:8000/api/posts 
+Title: Post Number 1
+Description: post1 description
+Image: //select image
+O/P
+{
+    "status": true,
+    "message": "Post created successfully",
+    "post": {
+        "title": "Post Number 1",
+        "description": "post1 description",
+        "image": "1720707179.png",
+        "updated_at": "2024-07-11T14:12:59.000000Z",
+        "created_at": "2024-07-11T14:12:59.000000Z",
+        "id": 1
+    }
+}
+
+Get posts (bearer token)
+GET http://127.0.0.1:8000/api/posts 
+O/P
+{
+    "status": true,
+    "message": "All posts data",
+    "data": {
+        "posts": [
+            {
+                "id": 1,
+                "title": "Post Number 1",
+                "description": "post1 description",
+                "image": "1720707179.png",
+                "created_at": "2024-07-11T14:12:59.000000Z",
+                "updated_at": "2024-07-11T14:12:59.000000Z"
+            },
+            …
+        ]
+    }
+}
+
+Get post (bearer token)
+GET http://127.0.0.1:8000/api/posts/2 
+O/P
+{
+    "status": true,
+    "message": "Your single post",
+    "data": {
+        "post": [
+            {
+                "id": 2,
+                "title": "Post Number 2",
+                "description": "post1 description",
+                "image": "1720707299.png"
+            }
+        ]
+    }
+}
+
+Update post (bearer token)
+POST http://127.0.0.1:8000/api/posts/2 
+Title: title2 updated
+Description: desc updated
+Image: //select file
+_method: PUT //This isn’t required, If we directly use PUT http method
+O/P
+{
+    "status": true,
+    "message": "Post updated successfully",
+    "post": 1
+}
+
+Delete post(bearer token)
+POST http://127.0.0.1:8000/api/posts/1 
+_method: DELETE ////This isn’t required, If we directly use DELETE http method
+63 Ajax CRUD with API
+AuthController
+Registration
+Login
+Logout
+
+PostController
+Show all posts
+Show single post
+Store post 
+Update post
+Delete post
+
+Implement AJAX in different ways
+JavaScript ajax(XMLHttpRequest)
+jQuery($.ajax())
+JavaScript Fetch() method (2015 -> ES6)
+Axios.js
+
+
+We’ll use following key-value when passing form-data
+Content-Type:application/json
+X-HTTP-Method-Override:PUT
+
+	
+
+
+
+
+64 Ajax CRUD with API II 
+If we are using ajax for file upload, we don’t need to pass method&enctype with form tag
+
+
+
+
+sd
+
+
+Some useful Tips
+$ php artisan make:model Comment -a
+Model [D:\wamp64\www\kare11\app\Models\Comment.php]
+Factory [D:\wamp64\www\lara11\database\factories\CommentFactory.php]
+Migration [D:\wamp64\www\lara11\database\migrations/2024_06_16_034505_create_comments_table.php]
+Seeder [D:\wamp64\www\lara11\database\seeders\CommentSeeder.php]
+Request [D:\wamp64\www\lara11\app\Http\Requests\StoreCommentRequest.php]
+Request [D:\wamp64\www\lara11\app\Http\Requests\UpdateCommentRequest.php] 
+Controller [D:\wamp64\www\lara11\app\Http\Controllers\CommentController.php]
+Policy [D:\wamp64\www\lara11\app\Policies\CommentPolicy.php]
+
+Illuminate\Support\Facades\Auth
+Illuminate\Support\Facades\Gate
+
+Folder Structure: ABCD PRRST V
+app
+Http
+Controllers
+Middleware //appear through command. Before Laravel 11 folder was there
+Requests
+Mail
+Models
+Scopes
+Observer //appear through command
+Policies
+Providers
+AppServiceProvider.php: defaultStringLength, Observer, Gate, Policy, Paginator::useBootstrapFive();
+View //appear through command
+Components
+Rules //appear through command
+bootstrap
+app.php	//middleware
+provider.php
+config
+app
+auth
+cache
+database
+filesystem
+mail
+queue
+services
+session
+database
+factories
+migrations
+seeders
+public
+css
+js
+images
+resources
+css
+js
+views	
+components  //appear through command
+routes
+api.php
+console.php
+web.php
+storage
+app
+framework
+cache
+sessions	//session management using Auth
+testing
+views
+logs
+tests	
+vendor
+
+Model
+protected function casts(): array
+{
+    return [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+    ];
+}
+
+
+public function getDobAttribute($value) {
+    return date('d M Y', strtotime($value));
+}
+
+
+public function setEmailAttribute($value) {
+    $this->attributes['email'] = strtolower($value);
+}
+
+
+public function scopeActive($query) {
+    return $query->where('status', 1);
+}
+
+
+protected static function booted()
+{
+    static::created(function($user) {
+
+
+    });
+    static::addGlobalScope('userdetail', function(Builder $builder) {
+
+
+    });
+    static::addGlobalScope(new UserScope);
+}
+
+—----------------------------------------------------------------------
+@section ---@show
+->@section ---@parent ---@endSection
+
+@prepend ...@endPrepend
+
+@abort_if(condition, 404)
+
+
+
+upSert(), insertOrIgnore(), insertGetId(), updateOrInsert(), 
+increment(), decrement(), incrementEach(), truncate()
+—-----------------------------------------------------------------------------------
+PHP Mysql methods
+1 Procedural
+2 Object oriented
+3 PDO(Question mark(?), Secured)
+
+1 Query builder(DB)
+read: get()
+insert: insert() returns true/false
+update: update()
+delete: delete()
+eg.DB::table('users')->get()
+
+Raw query
+Read: select()
+Insert: insert()
+Update: update()
+Delete: delete()
+Eg. DB::select('select * from users')
+
+Raw(Query builder & ORM)
+selectRaw()
+whereRaw()
+orderByRaw()
+groupByRaw()
+havingRaw()
+
+2 ORM
+read: all(), get()
+insert: create()  save() (insert not supported)
+update: update() save()
+delete: delete() destroy(), truncate()
+min, max, count, avg, sum 
+exists
+firstOrCreate, updateOrCreate, upsert,
+
+Model
+protected: $table, $primaryKey, $keyType, $with, $guaded, $fillable, $attributes
+public: $timestamps, $incrementing
+
+Validation class
+rules()
+attributes()
+messages()
+prepareForValidation()
+
+Middleware: route, middlewareGroup(appendToGroup), global(append() or use([]))
+Relationships
+
+resource routes/request/session: only, except
+
+Design pattern: singleton(bootstrap/app.php)
+
+Relationships
+one to one
+Student->contact
+hasOne>belongsTo
+Insert: $student->contact()->create()
+
+one to many
+user->>post
+hasMany->belongsTo
+Insert: $user->posts()->create() or createMany()
+
+many to many (attach, detach, sync, toggle)
+user ->>user_role<<- role
+belongsToMany<<->>belongsToMany
+Insert: $user->roles()->attach($roles) //detach, sync, toggle
+
+has one of many
+customer ->orders
+hasOne(Order::class)->latestOfMany()   ofMany(‘amount’, ‘max’)
+
+has one through
+user -> company -> phone_number
+hasOnethrough
+
+has many through
+country ->>users->>posts
+hasManyThrough
+
+one to one polymorphic
+user->images<-post
+Image->imageable()->morphTo()
+User/Post.->morphOne(Image::classs, 'imageable') 
+Insert: $user->image()->crate(['url'=>'abc.jpg'])
+
+one to many polymorphic
+Post->>Comment<<-video
+Comment->commentable()->morphTo
+Post->morphMany(Comment::class, 'commentable')
+Insert: $video->comments()->crate(['detail'=>'best video'])
+
+one of many polymorphic
+Post->>Comment<<-Video
+Comment->commentable()->morphTo()
+Post->>morphOne(Comment::class, 'commentable')->latestOfMany()
+
+Many to many polymorphic
+posts<<->>tags<<->>videos
+taggables table:
+
+Tag
+  posts()->morphByMany(Post::class, 'taggable');
+  videos()->morphByMany(Video::class, 'taggable');
+Post&Video->tags()->morphToMany(Tag::class, 'taggable')
+
+Insert: $post->tags()->create(['tag_name'=>'Khushal']); $post->tags()->attach([2,6]);
+
+
+Points to check
+redis & memecache
+put vs patch
+php&mysql datatypes, methods
+Laravel datatypes, validations
+check insert/save/create without $guarded, $fillable
